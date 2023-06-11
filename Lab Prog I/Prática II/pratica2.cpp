@@ -142,7 +142,7 @@ public:
 };
 
 //savior
-class Bulcola : public Soldado {
+class BulcTheBob : public Soldado {
 public:
     BulcTheBob(string nome, int saude = 500, int poder = 300) : Soldado(nome, saude, poder) {}
     virtual void atacar(Soldado &inimigo){
