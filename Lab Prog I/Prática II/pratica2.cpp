@@ -1,4 +1,23 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <string>
+#include <map>
+#include <utility>
+#include <numeric>
+#include <set>
+#include <vector>
+#include <stdio.h>
+#include <cstdlib>
+#include <algorithm>
+#include <random>
+#include <fstream>
+#include <sstream>
+#include <cmath>
+#include <cstring>
+#include <iomanip>
+#include <stdexcept>
+#include <ctime>
+#include <regex>
+#include <queue>
 using namespace std;
 
 //good side *************
@@ -23,97 +42,202 @@ class Soldado{
         float getPoder() const{
             return poder;
         }
+
+        void change_saude(float change){
+            saude -= change;
+        }
+        
 };
 class Elfo: public Soldado{
     public:
         Elfo(string nome, float saude=30, float poder=9): Soldado(nome, saude, poder){}
         virtual void atacar(Soldado &inimigo){
             inimigo.defender(*this, 1);
+            cout << this->getName() << " realizou um ATAQUE SIMPLES em " << inimigo.getName() << ".\n";
         }
         virtual void defender(Soldado &inimigo, float bonus_add=0, float bonus_mul=0){
-            if(rand() % 100 < 90) saude -= (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
-            else saude -= (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100) / 2; 
+            if(rand() % 100 < 90){
+                float perda = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+                saude -= perda;
+                cout << "O ataque de " << inimigo.getName() << " em " << this->getName() << "foi com FORCA MAXIMA!\n";
+                cout << this->getName() << "perdeu " << to_string(perda) << " de saude!\n";
+            }
+            else{
+                float perda = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100) / 2; 
+                saude -= perda;
+                cout << "O ataque de " << inimigo.getName() << " em " << this->getName() << "foi com PARCIALMENTE DEFENDIDO!\n";
+                cout << this->getName() << "perdeu " << to_string(perda) << " de saude!\n";
+            }
         }
 };
 class Anao: public Soldado{
     public:
         Anao(string nome, float saude=30, float poder=5): Soldado(nome, saude, poder){}
         virtual void atacar(Soldado &inimigo){
-            if(rand()%10 < 6) inimigo.defender(*this, 20);
+            if(rand()%10 < 6){
+                inimigo.defender(*this, 20);
+                cout << this->getName() << " realizou um ATAQUE SIMPLES em " << inimigo.getName() << ".\n";
+            }
+            else{
+                cout << "Que vergonha! " << this->getName() << " ERROU o ataque em " << inimigo.getName() << ".\n";
+            }
         }
         virtual void defender(Soldado &inimigo, float bonus_add=0, float bonus_mul=0){
-            if(rand() % 100 < 70) saude -= (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+            if(rand() % 100 < 70){
+                float perda = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+                saude -= perda;
+                cout << "O ataque de " << inimigo.getName() << " em " << this->getName() << "foi com FORCA MAXIMA!\n";
+                cout << this->getName() << "perdeu " << to_string(perda) << " de saude!\n";
+            }
+            else {
+                cout << "MUITO AGIL! " << this->getName() << " conseguiu DESVIAR do ataque!";
+            }
         }
 };
 class Humano: public Soldado{
     public:
         Humano(string nome, float saude=30, float poder=8): Soldado(nome, saude, poder){}
         virtual void atacar(Soldado &inimigo){
-            if(rand()%10 == 0) inimigo.defender(*this);
+            if(rand()%10 == 0){
+                cout << "ATAQUE DUPLO de " << this->getName() << " em " << inimigo.getName() << "!\n";
+                cout << "1o ataque:\n";
+                inimigo.defender(*this);
+                cout << "2o ataque:\n";
+            }
+            else{
+                cout << "ATAQUE SIMPLES de " << this->getName() << " em " << inimigo.getName() << "!\n";
+            }
             inimigo.defender(*this);
         }
         virtual void defender(Soldado &inimigo, float bonus_add=0, float bonus_mul=0){
             int x = rand();
-            if(x % 100 < 90) saude -= (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
-            else if(x % 100 == 99) saude -= (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100) * 2; 
-            this->atacar(inimigo);
+            if(x % 100 < 90){
+                float perda = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+                saude -= perda;
+                cout << "O ataque de " << inimigo.getName() << " em " << this->getName() << "foi com FORCA MAXIMA!\n";
+                cout << this->getName() << " perdeu " << to_string(perda) << " de saude!\n";
+            }
+            else if(x % 100 == 99){
+                float perda = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100) * 2;
+                saude -= perda;
+                cout << "MEU DEUS! O ataque de " << inimigo.getName() << " em " << this->getName() << "foi com ODIO!\n";
+                cout << this->getName() << " perdeu " << to_string(perda) << " de saude!\n";
+            }
+            cout << "Como sempre, " << this->getName() << " CONTRA-ATACA!\n";
+            inimigo.change_saude(poder);
+            cout << inimigo.getName() << " perdeu " << to_string(poder) << " de saude com o contra-ataque.\n";
         }
 };
 //savior
-class BulcTheBob : public Soldado {
+class Bulcola : public Soldado {
 public:
-    BulcTheBob(string nome, float saude = 500, float poder = 300) : Soldado(nome, saude, poder) {}
+    Bulcola(string nome, float saude = 500, float poder = 300) : Soldado(nome, saude, poder) {}
     virtual void atacar(Soldado &inimigo){
         int x = rand();
         if(x % 100 < 90){
+            cout << "O SALVADOR " << this->getName() << "com seu fiel cachorro little Bob!! Eles se unem para atacar!\n";
+            cout << inimigo.getName() << " lamenta.\n";
+            cout << "1o ataque:\n";
             inimigo.defender(*this);
+            cout << "2o ataque:\n";
             inimigo.defender(*this);
-            saude += (float) (x % 100) * 1.5;
+            float ganho = (float) (x % 100) * 1.5;
+            saude += ganho;
+            cout << "HEROI! " << this->getName() << " ainda RECUPEROU SAUDE!\n";
+            cout << this->getName() << " recuperou " << to_string(ganho) << " de saude.\n";
         }
         else{
+            float perda = (float) (x % 100) * 1.5;
+            saude -= perda;
+            cout << this->getName() << " sacrificou " << to_string(perda) << " de sua saude e ativou o modo temporario THE SAVIOR para seu leal cachorro little Bob virar o BIG BOB!\n";
             inimigo.defender(*this, (x % 100) * 2, 50);
-            saude -= (float) (x % 100) * 1.5;
         }
     }
     virtual void defender(Soldado &inimigo, float bonus_add = 0, float bonus_mul = 0) {
         int x = rand();
         if(x % 100 < 5) {
-            saude += (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100) / 2;
+            cout << "O ataque de " << inimigo.getName() << " foi VERGONHOSO! Ele escorregou! " << this->getName() << "esta gargalhando!\n";
+            float ganho = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100) / 2;
+            saude += ganho;
+            cout << "Essas boas gargalhadas aumentaram em " << to_string(ganho) << " a saude de " << this->getName() << endl;
         }
         else {
-            saude -= (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
-            inimigo.defender(*this, 35);
+            cout << "O ataque de " << inimigo.getName() << " bateu com forca! " << this->getName() << "esta sangrando.\n";
+            float perda = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+            saude -= perda;
+            cout << this->getName() << " perdeu " << to_string(perda) << " de saude e CONTRA-ATACA!\n";
+            inimigo.change_saude(poder);
+            cout << inimigo.getName() << " perdeu " << to_string(poder) << " de saude com o contra-ataque.\n";
         }
     }
 };
+
 class Mago: public Soldado{
     public:
         Mago(string nome, float saude=50, float poder=10): Soldado(nome, saude, poder){}
         virtual void atacar(Soldado &inimigo){
-            if(rand()%20 < 1) inimigo.defender(*this, 0, 500), this->defender(*this, -5);
-            else inimigo.defender(*this);
+            if(rand()%20 < 1){
+                cout << "O mago, " << this->getName() << "com todos seus misterios fez sua MAGIA ESPECIAL contra " << inimigo.getName() << ".\n";
+                cout << "Como de costume, seu ataque ricocheteou.\n";
+                inimigo.defender(*this, 0, 500);
+                this->defender(*this, -5);
+            }
+            else{
+                cout << "Magia simples de " << this->getName() << " em " << inimigo.getName() << ".\n";
+                inimigo.defender(*this);
+            }
         }
         virtual void defender(Soldado &inimigo, float bonus_add=0, float bonus_mul=0){
             int x = rand();
-            if(x % 100 < 93) saude -= (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+            if(x % 100 < 93){
+                float perda = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+                saude -= perda;
+                cout << "O ataque bateu forte. A saude do " << this->getName() << " caiu " << to_string(perda) << ".\n";
+            }
             else{
-                inimigo.defender(*this, (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100));
+                cout << "A magia dele eh incomparavel. DESVIOU DO ATAQUE E CONTRA-ATACA!\n";
+                float perda = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+                inimigo.change_saude(perda);
+                cout << inimigo.getName() << " perdeu " << to_string(perda) << " de saude.\n";
             }
         }
 };
 //evil side **************
 class Sauron: public Soldado{
     public:
-        Sauron(string nome, float saude=300, float poder=8): Soldado(nome, saude, poder){}
+        Sauron(string nome, float saude=100, float poder=8): Soldado(nome, saude, poder){}
         virtual void atacar(Soldado &inimigo){
-            if(rand()%10 < 3) inimigo.defender(*this);
+            if(rand()%10 < 3){
+                cout << "ATAQUE DUPLAMENTE SOMBRIO de " << this->getName() << " em " << inimigo.getName() << "!\n";
+                cout << "1o ataque:\n";
+                inimigo.defender(*this);
+                cout << "2o ataque:\n";
+            }
+            else{
+                cout << "ATAQUE SOMBRIO de " << this->getName() << " em " << inimigo.getName() << "!\n";
+            }
             inimigo.defender(*this);
         }
+        
         virtual void defender(Soldado &inimigo, float bonus_add=0, float bonus_mul=0){
-            inimigo.defender(*this, 0, 23);
             int x = rand();
-            if(x % 100 < 80) saude -= (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
-            else if(x % 100 >= 80  and x % 100 < 90) saude -= (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100) / 1.5;
+            if(x % 100 < 80){
+                float perda = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+                saude -= perda;
+                cout << "O poderoso Sauron foi atingido em cheio!\n";
+                cout << this->getName() << " perdeu " << to_string(perda) << " de saude.\n";
+            }
+            else if(x % 100 >= 80  and x % 100 < 90){
+                float perda = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100) / 1.5;
+                saude -= perda;
+                cout << "O poderoso Sauron defendeu o ataque!\n";
+                cout << this->getName() << " perdeu " << to_string(perda) << " de saude.\n";
+            }
+            else{
+                cout << "O poderoso Sauron fez " << inimigo.getName() << " de gato e sapato! DESVIOU E CONTRA-ATACOU!\n";
+                inimigo.change_saude(poder);
+                cout << inimigo.getName() << " sofreu com o poder do Sauron e perdeu " << to_string(poder) << " de saude.\n"; 
+            }
         }
 };
 class Orc: public Soldado{
@@ -121,21 +245,38 @@ class Orc: public Soldado{
         Orc(string nome, float saude=30, float poder=10): Soldado(nome, saude, poder){}
         virtual void atacar(Soldado &inimigo){
             if(rand()%10 < 2) {
+                cout << "O leal ORC," << this->getName() << ", com MUITA RAIVA, prepara o seu ATAQUE DUPLO ESPECIAL em " << inimigo.getName() << "!\n";
+                cout << "1o ataque:\n";
                 inimigo.defender(*this, 0, 10);
+                cout << "2o ataque:\n";
                 inimigo.defender(*this, 0, 10);
             }
             else{
+                cout << "O leal ORC," << this->getName() << ", parecendo um pouco cansado, prepara o seu simples ATAQUE DUPLO em " << inimigo.getName() << "!\n";
+                cout << "1o ataque:\n";
                 inimigo.defender(*this);
+                cout << "2o ataque:\n";
                 inimigo.defender(*this);
             }
         }
         virtual void defender(Soldado &inimigo, float bonus_add=0, float bonus_mul=0){
             int x = rand();
-            if(x % 100 < 97) saude -= (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+            if(x % 100 < 97){
+                cout << this->getName() << " foi atingido!\n";
+                float perda = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+                saude -= perda;
+                cout << this->getName() << " perdeu " << to_string(perda) << " de saude.\n";
+            }
             else{
-                saude -= (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100) * 1.79;
-                inimigo.defender(*this, 5, 23);
-                inimigo.defender(*this, 5, 23);
+                float perda = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100) * 1.79;
+                saude -= perda;
+                cout << this->getName() << " foi atingido pelas costas e caiu de cara em uma pedra! Perdeu " << to_string(perda) << " de saude\n";
+                cout << this->getName() << " odeia covardes! Esta enfurecido e ativou o modo DUPLA VINGANCA BRUTAL\n";
+                float dano = (float) (this->getPoder() + 5)*(1 + (23*1.0)/100);
+                cout << "1a vinganca:\n";
+                inimigo.change_saude(dano);
+                cout << "2a vinganca:\n";
+                inimigo.change_saude(dano);
             }
         }
 };
@@ -144,22 +285,42 @@ public:
     Dromedario(string nome, float saude = 600, float poder = 230) : Soldado(nome, saude, poder) {}
     virtual void atacar(Soldado &inimigo) {
         int x = rand();
-        if(x % 100 < 3){
+        if(x % 100 < 8){
+            cout << "O dromedario " << this->getName() << " acabou de beber uma aguinha e ta motivado.";
+            cout << "Ganhou " << to_string((x%100) * 23) << " de saude.\n";
             saude += (x%100) * 23;
         }
+        cout << "O dromedario prepara o GOLPE DO TRIPLO CUSPE\n";
+        cout << "1o cuspe:\n";
         inimigo.defender(*this, 0, 40);
+        cout << "2o cuspe:\n";
         inimigo.defender(*this, 0, 40);
+        cout << "3o cuspe:\n";
         inimigo.defender(*this, 0, 40);
     }
     virtual void defender(Soldado &inimigo, float bonus_add=0, float bonus_mul=0){
             int x = rand();
-            if(x % 100 < 75) saude -= (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+            if(x % 100 < 75){
+                cout << "O dromedario " << this->getName() << " teve sua duas corcovas atingidas! Agoniza de dor!\n";
+                float perda = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+                saude -= perda;
+                cout << "Perdeu " << to_string(perda) << " de saude!\n";
+            }
             else if(x % 100 >= 75 and x % 100 < 95){
-                saude -= (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100) / 2;
+                cout << "O dromedario " << this->getName() << " teve uma de suas corcovas atingida! Agoniza de dor!\n";
+                float perda = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100) / 2;
+                saude -= perda;
+                cout << "Perdeu " << to_string(perda) << " de saude!\n";
             }
             else {
-                saude += (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100) / 15;
-                inimigo.defender(*this, (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100), 150);
+                cout << "O ataque de " << inimigo.getName() << " atingiu o dromedario " << this->getName() << "...\n";
+                cout << "... Mas nao atingiu nenhuma corcova. O ataque foi refletido de volta e o dromedario vai beber um pouco de agua.\n";
+                float ganho = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100) / 10;
+                saude += ganho;
+                cout << this->getName() << " GANHOU " << to_string(ganho) << " de saude.\n";
+                float dano = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+                inimigo.change_saude(dano);
+                cout << inimigo.getName() << " PERDEU " << to_string(dano) << " de saude.\n";
             }
     }
 };
@@ -168,22 +329,35 @@ public:
     Claviculario(string nome, float saude = 1300, float poder = 5) : Soldado(nome, saude, poder) {}
     virtual void atacar(Soldado &inimigo) {
         int x = rand();
-        if (x % 100 < 2) {
+        if (x % 100 < 5) {
+            cout << "Claviculario " << this->getName() << " prepara o sacrificio para ABRIR O PORTAO DA ESCURIDAO!\n";
+            cout << "O portao libera o monstro CHAVE GIGANTE que ataca o " << inimigo.getName() << ".\n";
             inimigo.defender(*this, 100, 200);
+            cout << "O Claviculario perdeu 150 de saude com o sacrificio.\n";
             saude -= 150;
         } 
-        else inimigo.defender(*this);  
+        else{
+            cout << "Claviculario " << this->getName() << " ataca o " << inimigo.getName() << " com um molho de chaves flamejantes\n";
+            inimigo.defender(*this);  
+        }
     }
     virtual void defender(Soldado &inimigo, float bonus_add = 0, float bonus_mul = 0){
-        saude -= (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+        cout << "Claviculario " << this->getName() << " nao consegue se defender com suas chaves!\n";
+        float perda = (float) (inimigo.getPoder() + bonus_add)*(1 + (bonus_mul*1.0)/100);
+        saude -= perda;
+        cout << "Claviculario perdeu " << to_string(perda) << " de saude.\n";
         int x = rand();
-        if(x % 100 < 60) inimigo.defender(*this, 50);
+        if(x % 100 < 60){
+            cout << "Claviculario prepara seu molho de chaves flamejantes especiais para CONTRA-ATACAR!\n";
+            inimigo.change_saude(poder + 50);
+            cout << inimigo.getName() << " perdeu " << to_string(poder + 50) << " de saude.\n";
+        }
     }
 };
 
 int main(){
     srand(time(nullptr));
-    int n=2;
+    int n=27;
     Orc orc1("Rokblorggor"), orc2("Wortsnaga"), orc3("Bagul"), orc4("Snaglak"), orc5("Naznob"), orc6("Orknack"), orc7("Mekuz"), orc8("Throdrok"), orc9("Wazgut"), orc10("Ugrag");
     Sauron sauron("Sauron");
     Mago gandalf("Gandalf");
@@ -219,7 +393,7 @@ int main(){
                     Mago temp(no, saude, ataque);
                     vg.push_back(&temp);
                 } else if (cl[0] == 's') {
-                    BulcTheBob temp(no, saude, ataque);
+                    Bulcola temp(no, saude, ataque);
                     vg.push_back(&temp);
                 } else {
                     cout << "classe invalida" << endl;
@@ -275,16 +449,12 @@ int main(){
             qg.pop();
             qe.pop();
             if(r == 0){
-                cout << good->getName() << " atacou " << evil->getName() << endl;
                 good->atacar(*evil);
-                //cout << " causando " << dano << " de dano\n"; ALTERAR PARA OS CASOS DE DEFESA, EVASAO, COUNTER
                 cout << "Saudes atuais:\n" << good->getName() << ": " << good->getSaude() <<"\n"<< evil->getName() << ": " << evil->getSaude() << endl;
             }
             else {
-                cout << evil->getName() << " atacou " << good->getName() << endl;
                 evil->atacar(*good);
-                //cout << " causando " << dano << " de dano\n"; ALTERAR PARA OS CASOS DE DEFESA, EVASAO, COUNTER
-            cout << "Saudes atuais:\n" << good->getName() << ": " << good->getSaude() <<"\n"<< evil->getName() << ": " << evil->getSaude() << endl;
+                cout << "Saudes atuais:\n" << good->getName() << ": " << good->getSaude() <<"\n"<< evil->getName() << ": " << evil->getSaude() << endl;
             }
             if(good->getSaude()>0)qg.push(good);
             if(evil->getSaude()>0)qe.push(evil);
